@@ -10,6 +10,11 @@ export const StyledHeaderWrapper = styled("div")`
   max-width: 1440px;
   padding: 0 80px;
   margin: 0 auto 140px;
+  position: sticky;
+  top: 0;
+  right: 0;
+  background-color: #1f1d2b;
+  z-index: 10;
 `;
 
 export const StyledLogo = styled("h3")`

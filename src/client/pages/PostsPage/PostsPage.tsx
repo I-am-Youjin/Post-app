@@ -1,30 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PostCard from "../../components/PostCard/PostCard";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPosts } from "../../store/slices/postsSlice";
+import { IPost } from "../../types/types";
 
 const PostsPage = () => {
+  const dispatch = useDispatch();
+  const posts = useSelector((state: any) => state.posts.allPosts);
+  useEffect(() => {
+    dispatch(fetchPosts() as any);
+  }, []);
+  console.log(posts);
   return (
     <div>
-      <PostCard
-        id={1}
-        user="Varya"
-        title="Darov"
-        description="        Lorem ipsum dolor sit amet consectetur adipisicing elit. Id quasi doloremque incidunt atque doloribus possimus, accusamus culpa asperiores iste dolore eveniet suscipit odio officiis est cum ab minima? Eaque, doloremque.
-"
-      ></PostCard>
-      <PostCard
-        id={1}
-        user="Varya"
-        title="Darov"
-        description="        Lorem ipsum dolor sit amet consectetur adipisicing elit. Id quasi doloremque incidunt atque doloribus possimus, accusamus culpa asperiores iste dolore eveniet suscipit odio officiis est cum ab minima? Eaque, doloremque.
-"
-      ></PostCard>
-      <PostCard
-        id={1}
-        user="Varya"
-        title="Darov"
-        description="        Lorem ipsum dolor sit amet consectetur adipisicing elit. Id quasi doloremque incidunt atque doloribus possimus, accusamus culpa asperiores iste dolore eveniet suscipit odio officiis est cum ab minima? Eaque, doloremque.
-"
-      ></PostCard>
+      {posts.map((post: IPost) => {
+        return (
+          <PostCard
+            id={post.id}
+            user="Varya"
+            title={post.title}
+            description={post.body}
+          ></PostCard>
+        );
+      })}
     </div>
   );
 };

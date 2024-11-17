@@ -2,15 +2,16 @@ import React from "react";
 import Header from "./Header/Header";
 import Main from "./Main/Main";
 import { Outlet } from "react-router-dom";
+import { StyledLayout } from "./styles";
 
 const Layout = () => {
   return (
-    <div>
+    <StyledLayout>
       <Header />
       <Main>
         <Outlet />
       </Main>
-    </div>
+    </StyledLayout>
   );
 };
 

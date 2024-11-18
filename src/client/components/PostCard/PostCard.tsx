@@ -12,14 +12,20 @@ import {
 } from "./styles";
 import { IconButton } from "@mui/material";
 import { ThumbUp, ThumbDown, Bookmark } from "@mui/icons-material";
+import {
+  likePost,
+  dislikePost,
+  zeroReaction,
+} from "./../../store/slices/postsSlice";
+import store from "../../store";
 
 const PostCard: React.FC<IPostCard> = ({
   id,
-  user,
   title,
   description,
   date,
   img,
+  user,
 }) => {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
@@ -32,16 +38,20 @@ const PostCard: React.FC<IPostCard> = ({
       case !liked && !disliked:
         setLiked(!liked);
         setLikeCount(likeCount + 1);
+        store.dispatch(likePost(id));
         break;
       case !liked && disliked:
         setDisliked(!disliked);
         setLiked(!liked);
         setLikeCount(likeCount + 1);
         setDislikeCount(dislikeCount - 1);
+        store.dispatch(zeroReaction(id));
+        store.dispatch(likePost(id));
         break;
       case liked && !disliked:
         setLiked(!liked);
         setLikeCount(likeCount - 1);
+        store.dispatch(zeroReaction(id));
         break;
       default:
         break;
@@ -52,16 +62,21 @@ const PostCard: React.FC<IPostCard> = ({
       case !liked && !disliked:
         setDisliked(!disliked);
         setDislikeCount(dislikeCount + 1);
+        store.dispatch(dislikePost(id));
+
         break;
       case !liked && disliked:
         setDisliked(!disliked);
         setDislikeCount(dislikeCount - 1);
+        store.dispatch(zeroReaction(id));
         break;
       case liked && !disliked:
         setLiked(!liked);
         setDisliked(!disliked);
         setDislikeCount(dislikeCount + 1);
         setLikeCount(likeCount - 1);
+        store.dispatch(zeroReaction(id));
+        store.dispatch(dislikePost(id));
 
         break;
       default:

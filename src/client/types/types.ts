@@ -15,11 +15,11 @@ export interface IUserRoutes {
 
 export interface IPostCard {
   id: number;
-  user: string;
   title: string;
   description: string;
   date?: string;
   img?: string;
+  user: string;
 }
 
 export interface IPost {
@@ -27,6 +27,9 @@ export interface IPost {
   id: number;
   title: string;
   body: string;
+  user: string;
+  like: number;
+  dislike: number;
 }
 
 export interface IUser {
@@ -63,4 +66,8 @@ export interface IComment {
 
 export interface IPostState {
   allPosts: IPost[];
+}
+
+export interface IUserState {
+  allUsers: IUser[];
 }

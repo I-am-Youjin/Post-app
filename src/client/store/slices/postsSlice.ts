@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { jsonplaceholderApi } from "../../api/jsonPlaceholderApi";
-import { IPostState } from "../../types/types";
+import { IPostState, IUser, IPost } from "../../types/types";
 
 const initialState: IPostState = {
   allPosts: [],
@@ -10,25 +10,61 @@ export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (thunkApi) => {
     const resp = await jsonplaceholderApi.getAllPosts();
-    console.log(resp);
     return resp.data;
   }
 );
 
 const postsSlice = createSlice({
-  name: "setPosts",
+  name: "Posts",
   initialState,
   reducers: {
     setPost: (state, action) => {
       state.allPosts.push(action.payload);
     },
+    setUsers: (state, action) => {
+      state.allPosts = state.allPosts.map((post: IPost) => {
+        return {
+          ...post,
+          user: (
+            action.payload.find((user: IUser) => {
+              return JSON.stringify(user.id) === JSON.stringify(post.userId);
+            }) as any
+          ).username,
+        };
+      });
+    },
+    likePost: (state, action) => {
+      state.allPosts.map((post) => {
+        if (post.id === action.payload) {
+          post.like = +1;
+        }
+      });
+    },
+    dislikePost: (state, action) => {
+      state.allPosts.map((post) => {
+        if (post.id === action.payload) {
+          post.dislike = +1;
+        }
+      });
+    },
+    zeroReaction: (state, action) => {
+      state.allPosts.map((post) => {
+        if (post.id === action.payload) {
+          post.like = 0;
+          post.dislike = 0;
+        }
+      });
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPosts.fulfilled, (state, action) => {
-      (state.allPosts as []) = action.payload;
+      (state.allPosts as []) = action.payload.map((post: IPost) => {
+        return { ...post, user: "", like: 0, dislike: 0 };
+      });
     });
   },
 });
-export const { setPost } = postsSlice.actions;
+export const { setPost, setUsers, likePost, dislikePost, zeroReaction } =
+  postsSlice.actions;
 
 export default postsSlice.reducer;

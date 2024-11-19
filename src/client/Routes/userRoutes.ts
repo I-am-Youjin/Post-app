@@ -1,3 +1,4 @@
+import FavoritePostsPage from "../pages/FavoritePostsPage/FavoritePostsPage";
 import PostPage from "../pages/PostPage/PostPage";
 import { IUserRoutes } from "../types/types";
 
@@ -13,9 +14,8 @@ export const userRoutes: IUserRoutes[] = [
   {
     id: 3,
     path: "/favorite",
-    Component: PostPage,
-    componentAdditionalProps: { postId: "99" },
-    title: "Post",
+    Component: FavoritePostsPage,
+    title: "FavoritePost",
     strict: true,
   },
   {

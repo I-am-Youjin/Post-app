@@ -30,6 +30,9 @@ export interface IPost {
   user: string;
   like: number;
   dislike: number;
+  favorite: boolean;
+  img: string;
+  date: string;
 }
 
 export interface IUser {
@@ -66,6 +69,9 @@ export interface IComment {
 
 export interface IPostState {
   allPosts: IPost[];
+  // likedPosts: IPost[];
+  // dislikedPosts: IPost[];
+  favoritePosts: IPost[];
 }
 
 export interface IUserState {

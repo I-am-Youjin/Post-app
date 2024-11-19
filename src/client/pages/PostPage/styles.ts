@@ -1,17 +1,10 @@
 import styled from "styled-components";
 
-export const StyledPostCard = styled("div")`
+export const StyledPage = styled("div")`
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  cursor: pointer;
-  transition: 0.3s;
-  padding: 15px;
-  border-radius: 20px;
-  &:hover {
-    -webkit-box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.2);
-    -moz-box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.2);
-    box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.2);
-  }
 `;
 
 export const StyledTitle = styled("h4")`
@@ -42,7 +35,6 @@ export const StyledDescription = styled("p")`
 export const StyledActionsBox = styled("div")`
   display: flex;
   justify-content: space-between;
-  z-index: 0;
 `;
 
 export const StyledThubsBox = styled("div")`

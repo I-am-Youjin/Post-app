@@ -13,28 +13,31 @@ const PostsPage = () => {
   const users = useSelector((state: any) => state.users.allUsers);
 
   useEffect(() => {
-    dispatch(fetchPosts() as any);
-    dispatch(fetchUsers() as any);
+    if (!posts.length || !users.length) {
+      dispatch(fetchPosts() as any);
+      dispatch(fetchUsers() as any);
+    }
   }, []);
 
   useEffect(() => {
-    if (users.length && posts.length) {
+    if (users.length && posts.length && !posts[0].user) {
       store.dispatch(setUsers(users));
     }
   }, [users.length, posts.length]);
 
   return (
     <StyledPage>
-      {posts.map((post: IPost) => {
-        return (
-          <PostCard
-            user={post.user}
-            id={post.id}
-            title={post.title}
-            description={post.body}
-          ></PostCard>
-        );
-      })}
+      {posts &&
+        posts.map((post: IPost) => {
+          return (
+            <PostCard
+              user={post.user}
+              id={post.id}
+              title={post.title}
+              description={post.body}
+            ></PostCard>
+          );
+        })}
     </StyledPage>
   );
 };

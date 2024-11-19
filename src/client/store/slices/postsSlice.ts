@@ -4,6 +4,7 @@ import { IPostState, IUser, IPost } from "../../types/types";
 
 const initialState: IPostState = {
   allPosts: [],
+  favoritePosts: [],
 };
 
 export const fetchPosts = createAsyncThunk(
@@ -55,6 +56,31 @@ const postsSlice = createSlice({
         }
       });
     },
+    addToFavorite: (state, action) => {
+      state.allPosts.map((post) => {
+        if (post.id === action.payload) {
+          post.favorite = true;
+        }
+      });
+      state.favoritePosts.push(
+        state.allPosts.find((post) => {
+          return JSON.stringify(post.id) === JSON.stringify(action.payload);
+        }) as IPost
+      );
+    },
+    removeFromFavorite: (state, action) => {
+      state.allPosts.map((post) => {
+        if (post.id === action.payload) {
+          post.favorite = false;
+        }
+      });
+      state.favoritePosts = state.allPosts.filter(
+        (post) => post.favorite === true
+      );
+    },
+    clearFavorite: (state) => {
+      state.favoritePosts = [];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPosts.fulfilled, (state, action) => {
@@ -64,7 +90,14 @@ const postsSlice = createSlice({
     });
   },
 });
-export const { setPost, setUsers, likePost, dislikePost, zeroReaction } =
-  postsSlice.actions;
+export const {
+  setPost,
+  setUsers,
+  likePost,
+  dislikePost,
+  zeroReaction,
+  addToFavorite,
+  removeFromFavorite,
+} = postsSlice.actions;
 
 export default postsSlice.reducer;

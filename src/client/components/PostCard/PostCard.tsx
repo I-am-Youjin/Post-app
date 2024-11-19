@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { IPostCard } from "../../types/types";
+import React, { useEffect, useState } from "react";
+import { IPost, IPostCard, IPostState } from "../../types/types";
 import {
   StyledPostCard,
   StyledPostInformationBox,
@@ -16,8 +16,12 @@ import {
   likePost,
   dislikePost,
   zeroReaction,
+  addToFavorite,
+  removeFromFavorite,
 } from "./../../store/slices/postsSlice";
 import store from "../../store";
+import { useSelector } from "react-redux";
+import { NavLink } from "react-router-dom";
 
 const PostCard: React.FC<IPostCard> = ({
   id,
@@ -32,6 +36,19 @@ const PostCard: React.FC<IPostCard> = ({
   const [likeCount, setLikeCount] = useState(0);
   const [dislikeCount, setDislikeCount] = useState(0);
   const [favorite, setFavorite] = useState(false);
+  const allPosts = useSelector((state: any) => state.posts.allPosts);
+
+  useEffect(() => {
+    allPosts.find((post: IPost) => {
+      if (post.id === id) {
+        setLikeCount(post.like);
+        setDislikeCount(post.dislike);
+        setLiked(!!post.like);
+        setDisliked(!!post.dislike);
+        setFavorite(post.favorite);
+      }
+    });
+  }, [dislikeCount, dislikeCount, favorite]);
 
   const thumbUpFn = () => {
     switch (true) {
@@ -52,6 +69,7 @@ const PostCard: React.FC<IPostCard> = ({
         setLiked(!liked);
         setLikeCount(likeCount - 1);
         store.dispatch(zeroReaction(id));
+
         break;
       default:
         break;
@@ -69,6 +87,7 @@ const PostCard: React.FC<IPostCard> = ({
         setDisliked(!disliked);
         setDislikeCount(dislikeCount - 1);
         store.dispatch(zeroReaction(id));
+
         break;
       case liked && !disliked:
         setLiked(!liked);
@@ -85,19 +104,26 @@ const PostCard: React.FC<IPostCard> = ({
   };
   const toogleFavoite = () => {
     setFavorite(!favorite);
+    if (favorite) {
+      store.dispatch(removeFromFavorite(id));
+    } else {
+      store.dispatch(addToFavorite(id));
+    }
   };
 
   return (
     <StyledPostCard>
-      <StyledTitle>{title}</StyledTitle>
-      {img ? <img src={img}></img> : null}
-      <StyledDescription>{description}</StyledDescription>
-      <StyledPostInformationBox>
-        <StyledSecondaryInformation>{user}</StyledSecondaryInformation>
-        <StyledSecondaryInformation>
-          {date ? date : "--/--/--"}
-        </StyledSecondaryInformation>
-      </StyledPostInformationBox>
+      <NavLink to={`/post/${id}`} style={{ textDecoration: "none" }}>
+        <StyledTitle>{title}</StyledTitle>
+        {img ? <img src={img}></img> : null}
+        <StyledDescription>{description}</StyledDescription>
+        <StyledPostInformationBox>
+          <StyledSecondaryInformation>{user}</StyledSecondaryInformation>
+          <StyledSecondaryInformation>
+            {date ? date : "--/--/--"}
+          </StyledSecondaryInformation>
+        </StyledPostInformationBox>
+      </NavLink>
       <StyledActionsBox>
         <StyledThubsBox>
           <IconButton onClick={thumbUpFn}>

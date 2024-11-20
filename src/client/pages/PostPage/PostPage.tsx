@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { IPost } from "../../types/types";
+import { IComment, IPost } from "../../types/types";
 import {
   StyledActionsBox,
   StyledCount,
@@ -11,6 +11,8 @@ import {
   StyledDescription,
   StyledThubsBox,
   StyledTitle,
+  StyledCommentBox,
+  StyledCommentBoxTitle,
 } from "./styles";
 import { IconButton } from "@mui/material";
 import { ThumbUp, ThumbDown, Bookmark } from "@mui/icons-material";
@@ -23,10 +25,15 @@ import {
   addToFavorite,
   zeroReaction,
 } from "../../store/slices/postsSlice";
+import Comment from "../../components/Comment/Comment";
+import CustomTextArea from "../../components/CustomTextarea/CustomTextArea";
+import CustomInput from "../../components/CustomInput/CustomInput";
+import Button from "@mui/material/Button";
 
 const PostPage = () => {
   const { id } = useParams();
   const allPosts = useSelector((state: any) => state.posts.allPosts);
+  const allComments = useSelector((state: any) => state.comments.allComments);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -38,7 +45,6 @@ const PostPage = () => {
     setCurrentPost(
       allPosts.find((post: IPost) => JSON.stringify(post.id) === id)
     );
-    // console.log(currentPost);
   }, [currentPost]);
 
   useEffect(() => {
@@ -146,8 +152,6 @@ const PostPage = () => {
     }
   };
 
-  // console.log(currentPost);
-
   return (
     currentPost && (
       <StyledPage>
@@ -182,6 +186,42 @@ const PostPage = () => {
             />
           </IconButton>
         </StyledActionsBox>
+        <StyledCommentBox>
+          <CustomInput
+            placeholder="Title"
+            type="text"
+            onChange={(event) => console.log(event)}
+          />
+          <CustomTextArea />
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#6669E7",
+              fontFamily: "Poppins",
+              borderRadius: "20px",
+              maxWidth: "120px",
+            }}
+          >
+            Send
+          </Button>
+          <StyledCommentBoxTitle>Comments:</StyledCommentBoxTitle>
+          {allComments.map((comment: IComment) => {
+            if (
+              JSON.stringify(comment.postId) === JSON.stringify(currentPost.id)
+            ) {
+              return (
+                <Comment
+                  id={comment.id}
+                  postId={comment.postId}
+                  name={comment.name}
+                  body={comment.body}
+                  email={comment.email}
+                  date={comment.date}
+                />
+              );
+            }
+          })}
+        </StyledCommentBox>
       </StyledPage>
     )
   );

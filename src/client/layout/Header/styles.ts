@@ -35,7 +35,20 @@ export const StyledNav = styled("ul")`
 
 export const StyledNavItem = styled("li")`
   display: flex;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: "Poppins";
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 24px;
+  letter-spacing: 1.5px;
+  color: #bcbcbc;
+  position: relative;
+  transition: 0.3s;
 
+  &:hover {
+    color: #6669e7;
+  }
   & a {
     cursor: pointer;
     text-decoration: none;

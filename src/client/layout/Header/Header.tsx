@@ -7,8 +7,11 @@ import {
   StyledNavItem,
 } from "./styles";
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { IconButton } from "@mui/material";
 
 const Header = () => {
+  const currentUser = useSelector((state: any) => state.users.currentUser);
   return (
     <StyledHeaderWrapper>
       <StyledHeader>
@@ -23,6 +26,13 @@ const Header = () => {
           <StyledNavItem>
             <NavLink to="/profile">My profile</NavLink>
           </StyledNavItem>
+          {currentUser ? (
+            <StyledNavItem> Exit </StyledNavItem>
+          ) : (
+            <StyledNavItem>
+              <NavLink to="/Auth">Auth</NavLink>
+            </StyledNavItem>
+          )}
         </StyledNav>
       </StyledHeader>
     </StyledHeaderWrapper>

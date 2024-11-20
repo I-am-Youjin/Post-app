@@ -60,20 +60,29 @@ export interface IUser {
 }
 
 export interface IComment {
-  postId: string;
-  id: string;
+  postId: number;
+  id: number;
   name: string;
   email: string;
   body: string;
+  date?: string;
 }
 
 export interface IPostState {
   allPosts: IPost[];
-  // likedPosts: IPost[];
-  // dislikedPosts: IPost[];
   favoritePosts: IPost[];
 }
 
 export interface IUserState {
   allUsers: IUser[];
+  currentUser: IUser | null;
+}
+export interface ICommentsState {
+  allComments: IComment[];
+}
+export interface IInput {
+  placeholder: string;
+  type: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
 }

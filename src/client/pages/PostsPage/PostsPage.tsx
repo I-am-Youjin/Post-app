@@ -6,6 +6,7 @@ import { fetchUsers } from "../../store/slices/usersSlice";
 import { IPost } from "../../types/types";
 import { StyledPage } from "./styles";
 import store from "../../store/index";
+import { fetchComments } from "../../store/slices/commetsSlice";
 
 const PostsPage = () => {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const PostsPage = () => {
     if (!posts.length || !users.length) {
       dispatch(fetchPosts() as any);
       dispatch(fetchUsers() as any);
+      dispatch(fetchComments() as any);
     }
   }, []);
 

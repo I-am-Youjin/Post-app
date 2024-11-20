@@ -4,6 +4,7 @@ import { IUserState } from "../../types/types";
 
 const initialState: IUserState = {
   allUsers: [],
+  currentUser: null,
 };
 
 export const fetchUsers = createAsyncThunk(
@@ -21,6 +22,9 @@ const usersSlice = createSlice({
     setUser: (state, action) => {
       state.allUsers.push(action.payload);
     },
+    setCurrentUser: (state, action) => {
+      state.currentUser = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUsers.fulfilled, (state, action) => {
@@ -28,6 +32,6 @@ const usersSlice = createSlice({
     });
   },
 });
-export const { setUser } = usersSlice.actions;
+export const { setUser, setCurrentUser } = usersSlice.actions;
 
 export default usersSlice.reducer;

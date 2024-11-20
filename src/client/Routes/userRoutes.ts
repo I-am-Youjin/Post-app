@@ -1,3 +1,4 @@
+import AuthPage from "../pages/AuthPage/AuthPage";
 import FavoritePostsPage from "../pages/FavoritePostsPage/FavoritePostsPage";
 import PostPage from "../pages/PostPage/PostPage";
 import { IUserRoutes } from "../types/types";
@@ -24,6 +25,13 @@ export const userRoutes: IUserRoutes[] = [
     Component: PostPage,
     componentAdditionalProps: { postId: "99" },
     title: "Post",
+    strict: true,
+  },
+  {
+    id: 5,
+    path: "/Auth",
+    Component: AuthPage,
+    title: "Auth",
     strict: true,
   },
 ];

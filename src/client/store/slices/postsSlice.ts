@@ -79,7 +79,28 @@ const postsSlice = createSlice({
       );
     },
     clearFavorite: (state) => {
+      state.allPosts.map((post) => {
+        post.favorite = false;
+      });
       state.favoritePosts = [];
+    },
+    sortPosts: (state, action) => {
+      state.allPosts.sort((a, b) => {
+        if (action.payload === "default") {
+          return b.userId - a.userId;
+        }
+        return a.userId - b.userId;
+      });
+    },
+    deletePost: (state, action) => {
+      const actionPayloadIdAllPosts = state.allPosts
+        .map((post) => JSON.stringify(post))
+        .indexOf(JSON.stringify(action.payload));
+      const actionPayloadIdFavPosts = state.favoritePosts
+        .map((post) => JSON.stringify(post))
+        .indexOf(JSON.stringify(action.payload));
+      state.allPosts.splice(actionPayloadIdAllPosts, 1);
+      state.favoritePosts.splice(actionPayloadIdFavPosts, 1);
     },
   },
   extraReducers: (builder) => {
@@ -98,6 +119,9 @@ export const {
   zeroReaction,
   addToFavorite,
   removeFromFavorite,
+  clearFavorite,
+  sortPosts,
+  deletePost,
 } = postsSlice.actions;
 
 export default postsSlice.reducer;

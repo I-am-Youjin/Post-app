@@ -11,7 +11,7 @@ export const StyledPage = styled("div")`
   transition: 0.3s;
   height: calc(100vh - 192px);
 `;
-export const StyledForm = styled("div")<{ $hidden?: boolean }>`
+export const StyledForm = styled("div")`
   max-width: 800px;
   width: 100%;
   display: flex;
@@ -21,9 +21,6 @@ export const StyledForm = styled("div")<{ $hidden?: boolean }>`
   background-color: rgba(0, 0, 0, 0.3);
   padding: 40px;
   border-radius: 20px;
-  position: absolute;
-  top: 0;
-  ${(prop) => (prop.$hidden ? "left:-100vw;" : "")}
 `;
 
 export const StyledText = styled("p")`

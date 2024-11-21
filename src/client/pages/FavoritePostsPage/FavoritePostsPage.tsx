@@ -16,6 +16,8 @@ const FavoritePostsPage = () => {
               user={post.user}
               title={post.title}
               description={post.body}
+              date={post.date}
+              img={post.img}
             />
           );
         })}

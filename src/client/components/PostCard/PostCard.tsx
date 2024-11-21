@@ -22,6 +22,8 @@ import {
 import store from "../../store";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 const PostCard: React.FC<IPostCard> = ({
   id,
@@ -37,6 +39,14 @@ const PostCard: React.FC<IPostCard> = ({
   const [dislikeCount, setDislikeCount] = useState(0);
   const [favorite, setFavorite] = useState(false);
   const allPosts = useSelector((state: any) => state.posts.allPosts);
+  const currentUser = useSelector((state: any) => state.users.currentUser);
+  const [error, setError] = useState(false);
+  const [errorMessege, setErrorMessege] = useState("");
+
+  const AlertFn = () => {
+    setError(true);
+    setTimeout(() => setError(false), 5000);
+  };
 
   useEffect(() => {
     allPosts.find((post: IPost) => {
@@ -51,63 +61,78 @@ const PostCard: React.FC<IPostCard> = ({
   }, [dislikeCount, dislikeCount, favorite]);
 
   const thumbUpFn = () => {
-    switch (true) {
-      case !liked && !disliked:
-        setLiked(!liked);
-        setLikeCount(likeCount + 1);
-        store.dispatch(likePost(id));
-        break;
-      case !liked && disliked:
-        setDisliked(!disliked);
-        setLiked(!liked);
-        setLikeCount(likeCount + 1);
-        setDislikeCount(dislikeCount - 1);
-        store.dispatch(zeroReaction(id));
-        store.dispatch(likePost(id));
-        break;
-      case liked && !disliked:
-        setLiked(!liked);
-        setLikeCount(likeCount - 1);
-        store.dispatch(zeroReaction(id));
+    if (currentUser) {
+      switch (true) {
+        case !liked && !disliked:
+          setLiked(!liked);
+          setLikeCount(likeCount + 1);
+          store.dispatch(likePost(id));
+          break;
+        case !liked && disliked:
+          setDisliked(!disliked);
+          setLiked(!liked);
+          setLikeCount(likeCount + 1);
+          setDislikeCount(dislikeCount - 1);
+          store.dispatch(zeroReaction(id));
+          store.dispatch(likePost(id));
+          break;
+        case liked && !disliked:
+          setLiked(!liked);
+          setLikeCount(likeCount - 1);
+          store.dispatch(zeroReaction(id));
 
-        break;
-      default:
-        break;
+          break;
+        default:
+          break;
+      }
+    } else {
+      setErrorMessege("Sign up or Sign in for the action!");
+      AlertFn();
     }
   };
   const thumbDownFn = () => {
-    switch (true) {
-      case !liked && !disliked:
-        setDisliked(!disliked);
-        setDislikeCount(dislikeCount + 1);
-        store.dispatch(dislikePost(id));
+    if (currentUser) {
+      switch (true) {
+        case !liked && !disliked:
+          setDisliked(!disliked);
+          setDislikeCount(dislikeCount + 1);
+          store.dispatch(dislikePost(id));
 
-        break;
-      case !liked && disliked:
-        setDisliked(!disliked);
-        setDislikeCount(dislikeCount - 1);
-        store.dispatch(zeroReaction(id));
+          break;
+        case !liked && disliked:
+          setDisliked(!disliked);
+          setDislikeCount(dislikeCount - 1);
+          store.dispatch(zeroReaction(id));
 
-        break;
-      case liked && !disliked:
-        setLiked(!liked);
-        setDisliked(!disliked);
-        setDislikeCount(dislikeCount + 1);
-        setLikeCount(likeCount - 1);
-        store.dispatch(zeroReaction(id));
-        store.dispatch(dislikePost(id));
+          break;
+        case liked && !disliked:
+          setLiked(!liked);
+          setDisliked(!disliked);
+          setDislikeCount(dislikeCount + 1);
+          setLikeCount(likeCount - 1);
+          store.dispatch(zeroReaction(id));
+          store.dispatch(dislikePost(id));
 
-        break;
-      default:
-        break;
+          break;
+        default:
+          break;
+      }
+    } else {
+      setErrorMessege("Sign up or Sign in for the action!");
+      AlertFn();
     }
   };
   const toogleFavoite = () => {
-    setFavorite(!favorite);
-    if (favorite) {
-      store.dispatch(removeFromFavorite(id));
+    if (currentUser) {
+      setFavorite(!favorite);
+      if (favorite) {
+        store.dispatch(removeFromFavorite(id));
+      } else {
+        store.dispatch(addToFavorite(id));
+      }
     } else {
-      store.dispatch(addToFavorite(id));
+      setErrorMessege("Sign up or Sign in for the action!");
+      AlertFn();
     }
   };
 
@@ -142,6 +167,22 @@ const PostCard: React.FC<IPostCard> = ({
           />
         </IconButton>
       </StyledActionsBox>
+      <Stack
+        sx={{
+          width: "96%",
+          position: "absolute",
+          left: "2%",
+          bottom: "4%",
+          opacity: error ? "1" : "0",
+          zIndex: "10",
+          height: "200px",
+        }}
+        spacing={2}
+      >
+        <Alert variant="filled" severity="error">
+          {errorMessege}
+        </Alert>
+      </Stack>
     </StyledPostCard>
   );
 };

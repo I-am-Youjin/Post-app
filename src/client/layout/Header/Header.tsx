@@ -6,12 +6,20 @@ import {
   StyledNav,
   StyledNavItem,
 } from "./styles";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { IconButton } from "@mui/material";
+import { clearCurrentUser } from "../../store/slices/usersSlice";
+import { clearFavorite } from "../../store/slices/postsSlice";
+import store from "../../store";
 
 const Header = () => {
   const currentUser = useSelector((state: any) => state.users.currentUser);
+  const navigate = useNavigate();
+  const removeCurrentUser = () => {
+    navigate("/");
+    store.dispatch(clearCurrentUser());
+    store.dispatch(clearFavorite());
+  };
   return (
     <StyledHeaderWrapper>
       <StyledHeader>
@@ -23,11 +31,18 @@ const Header = () => {
           <StyledNavItem>
             <NavLink to="/favorite">Favorite</NavLink>
           </StyledNavItem>
-          <StyledNavItem>
-            <NavLink to="/profile">My profile</NavLink>
-          </StyledNavItem>
+          {currentUser && (
+            <StyledNavItem>
+              <NavLink to="/profile">My profile</NavLink>
+            </StyledNavItem>
+          )}
+          {currentUser && (
+            <StyledNavItem>
+              <NavLink to="/addPost">Add Post</NavLink>
+            </StyledNavItem>
+          )}
           {currentUser ? (
-            <StyledNavItem> Exit </StyledNavItem>
+            <StyledNavItem onClick={removeCurrentUser}> Exit </StyledNavItem>
           ) : (
             <StyledNavItem>
               <NavLink to="/Auth">Auth</NavLink>

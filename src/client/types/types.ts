@@ -57,6 +57,7 @@ export interface IUser {
     catchPhrase: string;
     bs: string;
   };
+  password: string;
 }
 
 export interface IComment {
@@ -84,5 +85,10 @@ export interface IInput {
   placeholder: string;
   type: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
+}
+export interface ITextarea {
+  placeholder: string;
+  onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   value?: string;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { IComment, IPost } from "../../types/types";
 import {
@@ -15,7 +15,7 @@ import {
   StyledCommentBoxTitle,
 } from "./styles";
 import { IconButton } from "@mui/material";
-import { ThumbUp, ThumbDown, Bookmark } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, Bookmark, Delete } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import store from "../../store";
 import {
@@ -24,13 +24,21 @@ import {
   removeFromFavorite,
   addToFavorite,
   zeroReaction,
+  deletePost,
 } from "../../store/slices/postsSlice";
 import Comment from "../../components/Comment/Comment";
 import CustomTextArea from "../../components/CustomTextarea/CustomTextArea";
 import CustomInput from "../../components/CustomInput/CustomInput";
 import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
+import { setComment } from "../../store/slices/commetsSlice";
 
 const PostPage = () => {
+  const initialState = {
+    title: "",
+    textarea: "",
+  };
   const { id } = useParams();
   const allPosts = useSelector((state: any) => state.posts.allPosts);
   const allComments = useSelector((state: any) => state.comments.allComments);
@@ -40,6 +48,46 @@ const PostPage = () => {
   const [dislikeCount, setDislikeCount] = useState(0);
   const [favorite, setFavorite] = useState(false);
   const [currentPost, setCurrentPost] = useState<IPost | null>(null);
+  const currentUser = useSelector((state: any) => state.users.currentUser);
+  const [error, setError] = useState(false);
+  const [errorMessege, setErrorMessege] = useState("");
+  const [commentState, setCommentState] = useState(initialState);
+  const navigate = useNavigate();
+
+  const AlertFn = () => {
+    setError(true);
+    setTimeout(() => setError(false), 5000);
+  };
+
+  const handleChangeValue = (
+    fieldName: keyof typeof initialState,
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setCommentState((prevData: typeof initialState) => {
+      return { ...prevData, [fieldName]: event.target.value };
+    });
+  };
+
+  const addComment = () => {
+    if (currentUser) {
+      const date = new Date();
+      store.dispatch(
+        setComment({
+          postId: Number(id),
+          id: Date.now(),
+          name: commentState.title,
+          email: currentUser.email,
+          body: commentState.textarea,
+          date: `${date.getFullYear()}/${date.getMonth()}/${date.getDay()}`,
+        })
+      );
+    } else {
+      setErrorMessege("Sign up or Sign in for the action!");
+      AlertFn();
+    }
+  };
 
   useEffect(() => {
     setCurrentPost(
@@ -61,95 +109,88 @@ const PostPage = () => {
         }
       });
     }
-  }, [dislikeCount, dislikeCount, currentPost]);
+  }, [dislikeCount, dislikeCount, currentPost, currentUser]);
 
   const thumbUpFn = () => {
-    switch (true) {
-      case !liked && !disliked:
-        setLiked(!liked);
-        setLikeCount(likeCount + 1);
-        store.dispatch(likePost((currentPost as IPost).id));
+    if (currentUser) {
+      switch (true) {
+        case !liked && !disliked:
+          setLiked(!liked);
+          setLikeCount(likeCount + 1);
+          store.dispatch(likePost(id));
+          break;
+        case !liked && disliked:
+          setDisliked(!disliked);
+          setLiked(!liked);
+          setLikeCount(likeCount + 1);
+          setDislikeCount(dislikeCount - 1);
+          store.dispatch(zeroReaction(id));
+          store.dispatch(likePost(id));
+          break;
+        case liked && !disliked:
+          setLiked(!liked);
+          setLikeCount(likeCount - 1);
+          store.dispatch(zeroReaction(id));
 
-        if (favorite) {
-          store.dispatch(removeFromFavorite((currentPost as IPost).id));
-          store.dispatch(addToFavorite((currentPost as IPost).id));
-        }
-        break;
-      case !liked && disliked:
-        setDisliked(!disliked);
-        setLiked(!liked);
-        setLikeCount(likeCount + 1);
-        setDislikeCount(dislikeCount - 1);
-        store.dispatch(zeroReaction((currentPost as IPost).id));
-        store.dispatch(likePost((currentPost as IPost).id));
-
-        if (favorite) {
-          store.dispatch(removeFromFavorite((currentPost as IPost).id));
-          store.dispatch(addToFavorite((currentPost as IPost).id));
-        }
-
-        break;
-      case liked && !disliked:
-        setLiked(!liked);
-        setLikeCount(likeCount - 1);
-        store.dispatch(zeroReaction((currentPost as IPost).id));
-
-        if (favorite) {
-          store.dispatch(removeFromFavorite((currentPost as IPost).id));
-          store.dispatch(addToFavorite((currentPost as IPost).id));
-        }
-
-        break;
-      default:
-        break;
+          break;
+        default:
+          break;
+      }
+    } else {
+      setErrorMessege("Sign up or Sign in for the action!");
+      AlertFn();
     }
   };
   const thumbDownFn = () => {
-    switch (true) {
-      case !liked && !disliked:
-        setDisliked(!disliked);
-        setDislikeCount(dislikeCount + 1);
-        store.dispatch(dislikePost((currentPost as IPost).id));
+    if (currentUser) {
+      switch (true) {
+        case !liked && !disliked:
+          setDisliked(!disliked);
+          setDislikeCount(dislikeCount + 1);
+          store.dispatch(dislikePost(id));
 
-        if (favorite) {
-          store.dispatch(removeFromFavorite((currentPost as IPost).id));
-          store.dispatch(addToFavorite((currentPost as IPost).id));
-        }
-        break;
-      case !liked && disliked:
-        setDisliked(!disliked);
-        setDislikeCount(dislikeCount - 1);
-        store.dispatch(zeroReaction((currentPost as IPost).id));
+          break;
+        case !liked && disliked:
+          setDisliked(!disliked);
+          setDislikeCount(dislikeCount - 1);
+          store.dispatch(zeroReaction(id));
 
-        if (favorite) {
-          store.dispatch(removeFromFavorite((currentPost as IPost).id));
-          store.dispatch(addToFavorite((currentPost as IPost).id));
-        }
-        break;
-      case liked && !disliked:
-        setLiked(!liked);
-        setDisliked(!disliked);
-        setDislikeCount(dislikeCount + 1);
-        setLikeCount(likeCount - 1);
-        store.dispatch(zeroReaction((currentPost as IPost).id));
-        store.dispatch(dislikePost((currentPost as IPost).id));
+          break;
+        case liked && !disliked:
+          setLiked(!liked);
+          setDisliked(!disliked);
+          setDislikeCount(dislikeCount + 1);
+          setLikeCount(likeCount - 1);
+          store.dispatch(zeroReaction(id));
+          store.dispatch(dislikePost(id));
 
-        if (favorite) {
-          store.dispatch(removeFromFavorite((currentPost as IPost).id));
-          store.dispatch(addToFavorite((currentPost as IPost).id));
-        }
-        break;
-      default:
-        break;
+          break;
+        default:
+          break;
+      }
+    } else {
+      setErrorMessege("Sign up or Sign in for the action!");
+      AlertFn();
     }
   };
+
   const toogleFavoite = () => {
-    setFavorite(!favorite);
-    if (favorite) {
-      store.dispatch(removeFromFavorite((currentPost as IPost).id));
+    if (currentUser) {
+      setFavorite(!favorite);
+      if (favorite) {
+        store.dispatch(removeFromFavorite(id));
+      } else {
+        store.dispatch(addToFavorite(id));
+      }
     } else {
-      store.dispatch(addToFavorite((currentPost as IPost).id));
+      setErrorMessege("Sign up or Sign in for the action!");
+      AlertFn();
     }
+  };
+
+  const handleDeletePost = () => {
+    store.dispatch(deletePost(currentPost));
+    navigate("/");
   };
 
   return (
@@ -179,20 +220,32 @@ const PostPage = () => {
             </IconButton>
             <StyledCount>{dislikeCount}</StyledCount>
           </StyledThubsBox>
-          <IconButton onClick={toogleFavoite}>
-            <Bookmark
-              htmlColor={favorite ? "#6669E7" : "#bcbcbc"}
-              fontSize="medium"
-            />
-          </IconButton>
+          <div>
+            {currentUser && currentUser.id === currentPost.userId && (
+              <IconButton onClick={handleDeletePost}>
+                <Delete htmlColor={"#bcbcbc"} fontSize="medium"></Delete>
+              </IconButton>
+            )}
+            <IconButton onClick={toogleFavoite}>
+              <Bookmark
+                htmlColor={favorite ? "#6669E7" : "#bcbcbc"}
+                fontSize="medium"
+              />
+            </IconButton>
+          </div>
         </StyledActionsBox>
         <StyledCommentBox>
           <CustomInput
             placeholder="Title"
             type="text"
-            onChange={(event) => console.log(event)}
+            onChange={(event) => handleChangeValue("title", event)}
+            value={commentState.title}
           />
-          <CustomTextArea />
+          <CustomTextArea
+            value={commentState.textarea}
+            onChange={(event) => handleChangeValue("textarea", event)}
+            placeholder="Leave your comment..."
+          />
           <Button
             variant="contained"
             sx={{
@@ -201,6 +254,7 @@ const PostPage = () => {
               borderRadius: "20px",
               maxWidth: "120px",
             }}
+            onClick={addComment}
           >
             Send
           </Button>
@@ -222,6 +276,22 @@ const PostPage = () => {
             }
           })}
         </StyledCommentBox>
+        <Stack
+          sx={{
+            width: "96%",
+            position: "absolute",
+            left: "2%",
+            bottom: "4%",
+            opacity: error ? "1" : "0",
+            zIndex: "10",
+            height: "200px",
+          }}
+          spacing={2}
+        >
+          <Alert variant="filled" severity="error">
+            {errorMessege}
+          </Alert>
+        </Stack>
       </StyledPage>
     )
   );
